@@ -15,12 +15,14 @@ The model itself is a simple LTSM. The complication in this case is data prepara
 
 ## Data cleaning
 
-Retail_exploratory.pynb.pdf explains what has been done and why
+Retail_exploratory.pynb.ipynb or Retail_exploratory.pynb.pdf explains what has been done and why.
 
 
 ## Training
 
 So far I have built two variations: first based on sales value as independent variable, second on sales value and week number. Next, I will probably add a holiday/non-holiday factor to the independent variables and perhaps other. I would have been useful to have results for the full year in 2012 to examine accuracy, but the data for the last few weeks is not available.
+
+I plan to expand the model a bit by adding a few more predictors and play with training and params.
 
 ## Results
 
