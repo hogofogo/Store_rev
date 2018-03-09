@@ -25,8 +25,9 @@ So far I have built two variations: first based on sales value as independent va
 ## Results
 
 Trained on sales value only:
-![alt text](screenshots/filename.png "Description goes here")
-See Screen Shot 2018-03-08 at 1.14.12 PM; the model picked the holiday spike, but it did not pick the post-holiday drop. However, this is a very simple model that only looks at revenue and neglects any contributing factors (such as week of the year, for example), and I haven't done much model tuning. I will try building a more complicated model now that would take several parameters into account.
+![alt text](https://github.com/hogofogo/Store_rev/blob/master/Screenshots/Screen%20Shot%202018-03-08%20at%201.14.12%20PM.png)
+The model picked the holiday spike, but it did not pick the post-holiday drop. However, this is a very simple model that only looks at revenue and neglects any contributing factors (such as week of the year, for example), and I haven't done much model tuning. I will try building a more complicated model now that would take several parameters into account.
 
 Now the model has been trained on both sales value and week number:
+![alt text](https://github.com/hogofogo/Store_rev/blob/master/Screenshots/Screen%20Shot%202018-03-09%20at%2010.53.28%20AM.png)
 Nod bad: Screen Shot 2018-03-09 at 10.53.28 AM. The model correctly picks two holiday spikes in the correct weeks, and the subsequent post-holiday dropoff. The predicted sales level is lower than I would have anticipated, and I am not yet sure whether the model is reacting the slight downwards y-o-y trend, or it needs more training/data/etc. I will try to add other parameters.
