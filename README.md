@@ -14,7 +14,7 @@ In this particular case, I wanted to run an RNN to see its ability to predict th
 
 
 ## Training
-
+I don't have 
 
 ## Results
 

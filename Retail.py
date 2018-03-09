@@ -46,136 +46,6 @@ def build_dataset():
 
     return data
 
-#LET'S DO SOME EXPLORATORY DATA ANALYSIS. THE DATASET CONTAINS SEVERAL STORES.
-#SELECT AN EXAMPLE STORE AND DEPARTMENT TO EXAMINE TIMELINE CHANGES
-data.describe(include = 'all')
-data.dtypes
-
-select_store = 1
-select_dept = 1
-data_df = data.loc[(data['Store'] == select_store) & (data['Dept'] == select_dept)]
-
-
-
-#PLOT SELECTED COLUMNS
-values = data_df.values
-to_plot = [ 3, 4, 5, 6, 7, 8, 9]
-i = 1
-# plot each column
-plt.figure()
-for item in to_plot:
-	plt.subplot(len(to_plot), 1, i)
-	plt.plot(values[:, item])
-	plt.title(data_df.columns[item], y=0.5, loc='right')
-	i += 1
-plt.show()
-
-
-to_plot = [10, 11, 12, 13, 14, 15]
-i = 1
-# plot each column
-plt.figure()
-for item in to_plot:
-	plt.subplot(len(to_plot), 1, i)
-	plt.plot(values[:, item])
-	plt.title(data.columns[item], y=0.5, loc='right')
-	i += 1
-plt.show()
-
-
-#SOME MORE EXPLORATORY DATA ANALSYSIS
-x = data['Store'].unique()
-data['Store'].nunique()
-data['Store'].value_counts()
-
-#PLOT STORES VS NUMBER OF DEPARTMENTS FOR EACH STORE
-def store_plot():
-    
-    x = data['Store'].unique()
-    y = []
-    for i in range(len(x)):
-        temp_df = data.loc[data['Store'] == i+1]
-        y.append(temp_df['Dept'].nunique())
-        i += 1
-
-
-    plt.figure()
-    plt.scatter(x, y, alpha=0.5)
-    plt.xlabel('stores')
-    plt.ylabel('departments')
-    plt.show()
-
-
-#ANNUAL SALES PER STORE
-    
-df_2010 = data[data['Date'].isin(pd.date_range("2010-01-01", "2010-12-31"))]
-df_2011 = data[data['Date'].isin(pd.date_range("2011-01-01", "2011-12-31"))]
-df_2012 = data[data['Date'].isin(pd.date_range("2012-01-01", "2012-12-31"))]
-
-x = data['Week'].unique()
-x = df_2010['Week'].unique()
-y = df_2010.groupby('Week')['Weekly_Sales'].sum()
-
-#build table aggregating sales by year and week
-annual_sales_df = pd.concat([df_2010.groupby('Week')['Weekly_Sales'].sum(), df_2011.groupby('Week')['Weekly_Sales'].sum()], axis = 1)    
-annual_sales_df = pd.concat([annual_sales_df, df_2012.groupby('Week')['Weekly_Sales'].sum()], axis = 1)
-annual_sales_df.columns = ['2010', '2011', '2012']
-
-
-
-plt.figure()
-plt.plot(annual_sales_df['2010'])
-plt.plot(annual_sales_df['2011'])
-plt.plot(annual_sales_df['2012'])
-plt.legend(loc='upper left')
-plt.show()
-
-
-#and also let's take a look at how sales vary by stores in a given year
-#say 2011. This gives us a hairy graph, but it makes clear what sort of 
-#trends we are seeing
-df_2011.groupby(['Week', 'Store']).sum()['Weekly_Sales'].unstack().plot(legend = None)
-plt.title('Weekly sales by store in 2011')
-plt.xlim(1,52)
-
-#and now do the same for 2010 which is an incomplete year
-df_2010.groupby(['Week', 'Store']).sum()['Weekly_Sales'].unstack().plot(legend = None)
-plt.title('Weekly sales by store in 2010')
-plt.xlim(1,52)
-
-#and 2012 which is also incomplete
-df_2012.groupby(['Week', 'Store']).sum()['Weekly_Sales'].unstack().plot(legend = None)
-plt.title('Weekly sales by store in 2012')
-plt.xlim(1,52)
-
-'''     
-#LET'S BUILD DATA SERIES READY FOR A MODEL NOW
-#START WITH TOTAL ANUAL SALES
-def build_data_set():
-    sales_df = pd.concat([df_2010.groupby('Week')['Weekly_Sales'].sum(), df_2011.groupby('Week')['Weekly_Sales'].sum()], axis = 0)
-    sales_df = pd.concat([sales_df, df_2012.groupby('Week')['Weekly_Sales'].sum()], axis = 0)
-    sales_df = pd.DataFrame(sales_df)
-
-    #take changes in sequence values
-    sales_df = sales_df.diff()
-    
-    n_vars = sales_df.shape[1]
-    shift_by = 1
-    cols, names = list(), list()
-
-    for i in range(shift_by, 0, -1):
-        cols.append(sales_df.shift(i))
-        names += [('var%d(t-%d)' % (j+1, i)) for j in range(n_vars)]
-
-    cols.append(sales_df)
-    names += [('var%d(t)' % (j+1)) for j in range(n_vars)]
-
-    agg = pd.concat(cols, axis=1)
-    agg.columns = names
-    agg.dropna(inplace=True)
-
-    return agg
-'''
 
 
 
@@ -413,6 +283,21 @@ def build_series():
 
     return sales_df
 
+def build_series2():
+    
+    #build separate data frames for each year
+    df_2010 = data[data['Date'].isin(pd.date_range("2010-01-01", "2010-12-31"))]
+    df_2011 = data[data['Date'].isin(pd.date_range("2011-01-01", "2011-12-31"))]
+    df_2012 = data[data['Date'].isin(pd.date_range("2012-01-01", "2012-12-31"))]
+
+    #aggregate and concatenate annual data frames
+    sales_df = pd.concat([df_2010.groupby('Week')['Weekly_Sales'].sum(), df_2011.groupby('Week')['Weekly_Sales'].sum()], axis = 0)
+    sales_df = pd.concat([sales_df, df_2012.groupby('Week')['Weekly_Sales'].sum()], axis = 0)
+    sales_df = pd.DataFrame(sales_df)
+
+    sales_df.reset_index(level = 0, inplace = True)
+    
+    return sales_df
 
 # create a differenced series
 def difference(dataset, interval=1):
@@ -525,13 +410,14 @@ def plot_forecast(series, forecast, n_test):
 n_test = 0
 n_lag = 1
 n_seq = 15
-n_epochs = 2000
+n_epochs = 2500
 n_batch = 1
-n_neurons = 10
+n_neurons = 100
 
 
 data = build_dataset()
 series = build_series()
+
 #!!!because n_test is zero, swap train and test to address prepare_data quirk
 scaler, _, train = prepare_data(series, n_test, n_lag, n_seq)
 
@@ -555,4 +441,92 @@ forecast = inverse_difference(last_ob, inv_scale)
 
 plot_forecast(series, forecast, n_test)
 
+
+#LET'S TRY NOW WITH WEEK COUNT USED AS INPUT
+def plot_forecast_nodiff(series, forecast, n_test):
+    # plot the entire dataset in blue
+    plt.plot(series.values)
+    # plot the forecast in red
+    off_s = len(series)
+    off_e = off_s + len(forecast) + 1
+    xaxis = [x for x in range(off_s, off_e)]
+    yaxis = forecast
+    yaxis = np.insert(forecast, [0], series.values[off_s-1])
+    #yaxis = forecast
+    plt.plot(xaxis, yaxis, color='red')
+    # show the plot
+    plt.show()
+    
+
+
+
+data = build_dataset()
+#for building series with week number use this one:
+series = build_series2()
+values = series.values
+values = values.astype('float32')
+# normalize features
+scaler = MinMaxScaler(feature_range=(0, 1))
+scaled = scaler.fit_transform(values)
+# frame as supervised learning
+reframed = series_to_supervised(scaled, n_lag, n_seq)
+# drop columns we don't want to predict
+reframed.drop(reframed.columns[[2,4,6,8,10,12,14,16,18,20,22,24,26,28,30]], axis=1, inplace=True)
+
+#again let's not split into train and test
+values = reframed.values
+train = values
+
+#split into inputs and outputs, mind that X has an extra variable
+X, y = train[:, 0:n_lag+1], train[:, n_lag+1:]
+# reshape training into [samples, timesteps, features]
+X = X.reshape(X.shape[0], 1, X.shape[1])
+
+# design network
+model = Sequential()
+model.add(LSTM(n_neurons, batch_input_shape=(n_batch, X.shape[1], X.shape[2]), stateful=True))
+model.add(Dense(y.shape[1]))
+model.compile(loss='mean_squared_error', optimizer='adam')
+
+for i in range(n_epochs):
+		model.fit(X, y, epochs=1, batch_size=n_batch, verbose=1, shuffle=False)
+		model.reset_states()
+model.save('/Users/vlad/Projects/Store_sales/lstm_model_sales.h5')
+
+#build a forecast
+#X_ = train[127, 0:n_lag+1]
+X_t = scaled[142, 0:n_lag+1]
+X_t = X_t.reshape(1,2)
+X_t = X_t.reshape(X_t.shape[0], 1, X_t.shape[1])
+forecast = model.predict(X_t, batch_size=n_batch)
+forecast = [x for x in forecast[0, :]]
+# inverse transform forecasts and test
+forecast = np.array(forecast)
+forecast = forecast.reshape(1, len(forecast))
+
+# invert scaling for actual
+
+
+
+#refit series values and inverse transform results
+values = series.values
+values = values.astype('float32')
+scaled = scaler.fit_transform(values[:,1:2])
+inv_scale = scaler.inverse_transform(forecast)
+inv_scale = inv_scale[0, :]
+#plt.plot(inv_scale)
+
+
+index = len(series) - n_test - 1
+last_ob = series.values[index,1]
+
+
+
+forecast = inverse_difference(last_ob, inv_scale)
+#forecast = forecast[0]
+#forecast = pd.DataFrame(forecast)
+
+
+
+plot_forecast_nodiff(series['Weekly_Sales'], inv_scale, n_test)
 
