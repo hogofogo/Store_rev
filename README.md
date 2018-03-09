@@ -25,6 +25,7 @@ So far I have built two variations: first based on sales value as independent va
 ## Results
 
 Trained on sales value only:
+![alt text](screenshots/filename.png "Description goes here")
 See Screen Shot 2018-03-08 at 1.14.12 PM; the model picked the holiday spike, but it did not pick the post-holiday drop. However, this is a very simple model that only looks at revenue and neglects any contributing factors (such as week of the year, for example), and I haven't done much model tuning. I will try building a more complicated model now that would take several parameters into account.
 
 Now the model has been trained on both sales value and week number:
