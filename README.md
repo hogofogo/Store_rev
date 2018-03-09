@@ -33,4 +33,6 @@ Now the model has been trained on both sales value and week number:
 
 ![alt text](https://github.com/hogofogo/Store_rev/blob/master/Screenshots/Screen%20Shot%202018-03-09%20at%2010.53.28%20AM.png)
 
-Nod bad. The model correctly picks two holiday spikes in the correct weeks, and the subsequent post-holiday dropoff. The predicted sales level is lower than I would have anticipated, and I am not yet sure whether the model is reacting the slight downwards y-o-y trend, or it needs more training/data/etc. I will try to add other parameters.
+Nod bad. The model correctly picks two holiday spikes in the correct weeks, and the subsequent post-holiday dropoff. The predicted sales level is lower than I would have anticipated, and I am not yet sure whether the model is reacting the slight downwards y-o-y trend, or it needs more training/data/etc. 
+
+Next steps:I will try to add other parameters and experiment with hyperparams and length of training.
